@@ -45,7 +45,9 @@ class Carta{
     getId(){
         return this.#id
     }
-
+    getFrenteImg(){
+        return this.#frenteImg;
+    }
     constructor(id, valor, funImg, frenteImg){
         this.#id = id
         this.#valor = valor
@@ -55,61 +57,92 @@ class Carta{
 }
 
 function gerarBaralho() {
-    let elemento = document.querySelector(".baralho");
     let naipes = ["clubs", "diamonds", "hearts", "spades"];
     let nomes = [
         "ace", "2", "3", "4", "5", "6", "7", "8", "9", "10",
         "jack", "queen", "king"
     ];
-    let html = "";
-
+    lista = [];
     for (let naipe of naipes) {
-        for (let nome of nomes) {
-            html += "<img src='img/cards/" + nome + "_of_" + naipe + ".png'>";
+        for (let i = 0; i < nomes.length; i++) {
+            let nome = nomes[i];
+            let valor = i + 1;
+            if (valor > 10) valor = 10;
+            let id = nome + naipe[0];
+            let img = "img/cards/" + nome + "_of_" + naipe + ".png";
+            let carta = new Carta(id, valor, "img/cards/back_01.png", img);
+            lista.push(carta);
         }
     }
+}
 
+let lista = [];
+let deck = new Pilha();
+let mao = [];
+
+// Inicializa tudo ao carregar
+window.onload = function() {
+    gerarBaralho();
+    embaralhar();
+    empilhar();
+};
+
+// ...existing code...
+
+function desenharBaralho(){
+    let elemento = document.querySelector(".baralho");
+    let html = "";
+    for(let i = 0; i < lista.length; i++){
+        let img = "<img src='" + lista[i].getFrenteImg() + "'>";
+        html += img;
+    }
     elemento.innerHTML = html;
 }
 
-let lista = []
-gerarBaralho()
+function sortearNumero(){
+    let min = 0;
+    let max = 51;
+    let numero = Math.floor(Math.random() *  (max - min + 1)) + min;
+    return numero;
+}
 
-//FUNÇÕES 
-function gerarBaralho(){
-    let elemento = document.querySelector(".baralho");
-    let html = "";
-    let prefixo = "";
-    let sufixo = "";
-    for(let i = 1; i <= 13; i++){
-        if(i == 1){
-            prefixo = "ace";
-        }else if(i == 11){
-            prefixo = "jack";
-        }else if(i == 12){
-            prefixo = "queen";
-        }else if(i == 13){
-            prefixo = "king";
-        }else{
-            prefixo = i + "";
-        }
-
-        for(let naipe = 0; naipe < 4; naipe++){
-            if(naipe == 0){
-                sufixo  = "clubs";
-            }else if(naipe == 1){
-                sufixo  = "diamonds";
-            }else if(naipe == 2){
-                sufixo = "hearts";
-            }else if(naipe == 3){
-                sufixo = "spades";
-            }else{
-                sufixo = "";
+function embaralhar(){
+    let baralho = [];
+    while(baralho.length < 52){
+        let indice = sortearNumero();
+        let encontrado = false;
+        for(let i = 0; i < baralho.length; i++){
+            if(lista[indice].getId() == baralho[i].getId()){
+                encontrado = true;
+                break;
             }
-            let img = "img/cards/" + prefixo + "_of_" + sufixo + ".png";
-            let tag = "<img src='" + img + "'>";
-            html += tag;
+        }
+        if(!encontrado){
+            baralho.push(lista[indice]);
         }
     }
-    elemento.innerHTML = html;
+    lista = baralho;
+}
+
+function empilhar(){
+    for(let i = 0; i < lista.length; i++){
+        deck.push(lista[i]);
+    }
+    console.log("Quantidade de cartas no deck: " + deck.size());
+}
+
+
+function virarCarta(){
+    let elemento = document.querySelector("#mao");
+    let carta = deck.top();
+    let html = "";
+    if (carta) {
+        mao.push(carta);
+        deck.pop();
+    }
+    // Mostra todas as cartas viradas
+    for(let i=0; i < mao.length; i++){
+        html += "<img src='" + mao[i].getFrenteImg() + "'>";
+    }
+    if(elemento) elemento.innerHTML  = html;
 }
