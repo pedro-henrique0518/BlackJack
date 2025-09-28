@@ -1,3 +1,86 @@
+// Função para reiniciar o jogo
+function reiniciarJogo() {
+    mao = [];
+    maoBanca = [];
+    deck = new Pilha();
+    gerarBaralho();
+    embaralhar();
+    empilhar();
+
+    let elMao = document.querySelector("#mao");
+    let elMaoBanca = document.querySelector("#mao-banca");
+    let elPontJog = document.querySelector("#pontuacao-jogador");
+    let elPontBanca = document.querySelector("#pontuacao-banca");
+    let elResultado = document.querySelector("#resultado-jogo");
+    if(elMao) elMao.innerHTML = "";
+    if(elMaoBanca) elMaoBanca.innerHTML = "";
+    if(elPontJog) elPontJog.textContent = "Pontuação: 0";
+    if(elPontBanca) elPontBanca.textContent = "Pontuação: 0";
+    if(elResultado) elResultado.textContent = "";
+}
+
+
+let maoBanca = [];
+
+function desenharBanca() {
+    let elemento = document.querySelector("#mao-banca");
+    let pontuacaoElemento = document.querySelector("#pontuacao-banca");
+    let html = "";
+    for(let i=0; i < maoBanca.length; i++){
+        html += "<img src='" + maoBanca[i].getFrenteImg() + "'>";
+    }
+    if(elemento) elemento.innerHTML = html;
+    if(pontuacaoElemento) pontuacaoElemento.textContent = "Pontuação: " + calcularPontuacao(maoBanca);
+}
+
+
+function pararJogador() {
+    while (calcularPontuacao(maoBanca) < 17) {
+        let carta = deck.top();
+        if (!carta) break;
+        maoBanca.push(carta);
+        deck.pop();
+    }
+    desenharBanca();
+    mostrarResultado();
+}
+
+
+function mostrarResultado() {
+    let pontosJogador = calcularPontuacao(mao);
+    let pontosBanca = calcularPontuacao(maoBanca);
+    let mensagem = "";
+    if (pontosJogador > 21) {
+        mensagem = "Você estourou! Banca vence.";
+    } else if (pontosBanca > 21) {
+        mensagem = "Banca estourou! Você vence!";
+    } else if (pontosJogador > pontosBanca) {
+        mensagem = "Você venceu!";
+    } else if (pontosJogador < pontosBanca) {
+        mensagem = "Banca venceu!";
+    } else {
+        mensagem = "Empate!";
+    }
+    let resultadoDiv = document.getElementById("resultado-jogo");
+    if(resultadoDiv) resultadoDiv.textContent = mensagem;
+}
+
+function calcularPontuacao(mao) {
+    let soma = 0;
+    let ases = 0;
+    for (let i = 0; i < mao.length; i++) {
+        let valor = mao[i].getValor();
+        soma += valor;
+        if (valor === 1) ases++;
+    }
+    
+    while (ases > 0 && soma + 10 <= 21) {
+        soma += 10;
+        ases--;
+    }
+    return soma;
+}
+
 class Pilha{
 
     /*
@@ -42,17 +125,20 @@ class Carta{
     #funImg = ""
     #frenteImg = ""
 
+    constructor(id, valor, funImg, frenteImg){
+        this.#id = id
+        this.#valor = valor
+        this.#funImg = funImg
+        this.#frenteImg = frenteImg
+    }
     getId(){
         return this.#id
     }
     getFrenteImg(){
         return this.#frenteImg;
     }
-    constructor(id, valor, funImg, frenteImg){
-        this.#id = id
-        this.#valor = valor
-        this.#funImg = funImg
-        this.#frenteImg = frenteImg
+    getValor(){
+        return this.#valor;
     }
 }
 
@@ -131,9 +217,10 @@ function empilhar(){
     console.log("Quantidade de cartas no deck: " + deck.size());
 }
 
-
+// Função para virar carta ao clicar
 function virarCarta(){
     let elemento = document.querySelector("#mao");
+    let pontuacaoElemento = document.querySelector("#pontuacao-jogador");
     let carta = deck.top();
     let html = "";
     if (carta) {
@@ -145,4 +232,6 @@ function virarCarta(){
         html += "<img src='" + mao[i].getFrenteImg() + "'>";
     }
     if(elemento) elemento.innerHTML  = html;
+    // Exibe a pontuação
+    if(pontuacaoElemento) pontuacaoElemento.textContent = "Pontuação: " + calcularPontuacao(mao);
 }

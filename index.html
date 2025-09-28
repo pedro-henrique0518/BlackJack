@@ -10,23 +10,28 @@
 
 <body>
     <div class="gameboard" id="gameboard">
+        <div id="tutorial" style="background:#eaf1fb; border-radius:10px; padding:18px 20px 12px 20px; margin-bottom:28px; color:#1e3c72; font-size:1.08em;">
+            <strong>Como jogar BlackJack:</strong><br>
+            1. Clique na carta de costas para comprar cartas e formar sua mão.<br>
+            2. O objetivo é somar 21 pontos ou chegar o mais próximo possível, sem passar disso.<br>
+            3. Quando quiser parar de comprar cartas, clique em <b>Parar</b>.<br>
+            4. A banca (computador) irá jogar automaticamente.<br>
+            5. O resultado aparecerá na tela.<br>
+            6. Para jogar novamente, clique em <b>Reiniciar</b>.<br>
+            <span style="color:#d7263d;">Se passar de 21 pontos, você perde automaticamente!</span>
+        </div>
         <section id="mesaBaralho">
-            <section class="desafiante">
-                DESAFIANTE
-            </section>
-
-            <section class="centroMesa">
-                CENTRO DA MESA
-            </section>
-
+            <div id="pontuacao-jogador"></div>
+            <section id="mao"></section>
             <section class="banca">
+                <div id="pontuacao-banca"></div>
+                <section id="mao-banca"></section>
                 <div class="baralho"></div>
                 <img onclick="virarCarta()" src="img/cards/back_01.png" id="deck">
+                <button id="btn-parar" onclick="pararJogador()">Parar</button>
+                <button id="btn-reset" onclick="reiniciarJogo()">Reiniciar</button>
             </section>
-
-            <section id="mao">
-
-            </section>
+            <div id="resultado-jogo" style="margin-top:20px; font-size:1.2em; font-weight:bold; color:#222;"></div>
         </section>
     </div>
 </body>
